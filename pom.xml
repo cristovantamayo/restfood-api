@@ -53,6 +53,10 @@
 			<artifactId>mysql-connector-java</artifactId>
 			<scope>runtime</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -60,6 +64,14 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>	
+			<plugin>
+			    <groupId>com.spotify</groupId>
+			    <artifactId>dockerfile-maven-plugin</artifactId>
+			    <version>1.4.2</version>
+			        <configuration>
+			            <repository>emmanuelneri/${project.artifactId}-app</repository>
+			        </configuration>
 			</plugin>
 		</plugins>
 	</build>
