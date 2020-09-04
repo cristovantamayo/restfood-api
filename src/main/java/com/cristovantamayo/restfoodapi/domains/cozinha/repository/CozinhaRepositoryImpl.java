@@ -1,18 +1,18 @@
-package com.cristovantamayo.restfoodapi.infrastructure.repository;
+package com.cristovantamayo.restfoodapi.domains.cozinha.repository;
 
 import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import org.springframework.stereotype.Component;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.cristovantamayo.restfoodapi.domain.model.Cozinha;
-import com.cristovantamayo.restfoodapi.domain.repository.RestauranteRepository;
+import com.cristovantamayo.restfoodapi.domains.cozinha.model.Cozinha;
 
-@Component
-public class RestauranteRepositoryImpl implements RestauranteRepository {
+@Repository
+class CozinhaRepositoryImpl implements CozinhaRepository {
 
 	@PersistenceContext
 	private EntityManager manager;
@@ -36,8 +36,12 @@ public class RestauranteRepositoryImpl implements RestauranteRepository {
 	
 	@Transactional
 	@Override
-	public void remove(Cozinha cozinha) {
-		cozinha = findById(cozinha.getId());
+	public void remove(Long id) {
+		Cozinha cozinha = findById(id);
+		
+		if(cozinha == null)
+			throw new EmptyResultDataAccessException(1);
+		
 		manager.remove(cozinha);
 	}
 

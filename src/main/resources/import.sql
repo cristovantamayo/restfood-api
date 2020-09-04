@@ -1,5 +1,6 @@
-INSERT INTO cozinha (nome) VALUES ('Tailandesa')
-INSERT INTO cozinha (nome) VALUES ('Indiana')
+INSERT INTO cozinha (id, nome) VALUES (1, 'Tailandesa')
+INSERT INTO cozinha (id, nome) VALUES (2, 'Indiana')
 
-INSERT INTO restaurante (nome, taxa_frete) VALUES ('Cozinha Owika Tailândia', 8)
-INSERT INTO restaurante (nome, taxa_frete) VALUES ('Namaste Food', 10)
+INSERT INTO restaurante (nome, taxa_frete, cozinha_id) VALUES ('Cozinha Owika Tailândia', 8, 1)
+INSERT INTO restaurante (nome, taxa_frete, cozinha_id) VALUES ('Muay Food', 10, 1)
+INSERT INTO restaurante (nome, taxa_frete, cozinha_id) VALUES ('Namaste Food', 10, 2)
