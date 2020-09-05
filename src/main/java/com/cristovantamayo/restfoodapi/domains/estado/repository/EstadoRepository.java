@@ -6,8 +6,8 @@ import com.cristovantamayo.restfoodapi.domains.estado.model.Estado;
 
 public interface EstadoRepository {
 	List<Estado> getAll();
-	Estado findById(Long id);
-	Estado save(Estado cidade);
-	void remove(Estado cidade);
+	Estado findById(Long estadoId);
+	Estado save(Estado estado);
+	void remove(Long estadoId);
 
 }

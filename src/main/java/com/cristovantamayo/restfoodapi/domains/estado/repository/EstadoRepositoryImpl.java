@@ -5,13 +5,14 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cristovantamayo.restfoodapi.domains.estado.model.Estado;
+import com.cristovantamayo.restfoodapi.exception.EntidadeNaoEncontradaException;
 
-@Component
-public class EstadoRepositoryImpl implements EstadoRepository {
+@Repository
+class EstadoRepositoryImpl implements EstadoRepository {
 
 	@PersistenceContext
 	private EntityManager manager;
@@ -23,8 +24,8 @@ public class EstadoRepositoryImpl implements EstadoRepository {
 	}
 	
 	@Override
-	public Estado findById(Long id) {
-		return manager.find(Estado.class, id);
+	public Estado findById(Long estadoId) {
+		return manager.find(Estado.class, estadoId);
 	}
 	
 	@Transactional
@@ -35,8 +36,14 @@ public class EstadoRepositoryImpl implements EstadoRepository {
 	
 	@Transactional
 	@Override
-	public void remove(Estado estado) {
-		estado = findById(estado.getId());
+	public void remove(Long estadoId) {
+		Estado estado = findById(estadoId);
+		
+		if(estado == null) {
+			throw new EntidadeNaoEncontradaException(
+				String.format("O ID %d informado não corresponde a um Estado válido", estadoId));
+		}
+		
 		manager.remove(estado);
 	}
 

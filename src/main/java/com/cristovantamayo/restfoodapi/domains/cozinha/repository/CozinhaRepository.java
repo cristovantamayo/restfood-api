@@ -7,6 +7,7 @@ import com.cristovantamayo.restfoodapi.domains.cozinha.model.Cozinha;
 public interface CozinhaRepository {
 	
 	List<Cozinha> getAll();
+	List<Cozinha> getContaining(String nome);
 	Cozinha findById(Long id);
 	Cozinha save(Cozinha cozinha);
 	void remove(Long id);

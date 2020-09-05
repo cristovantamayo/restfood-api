@@ -16,11 +16,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.cristovantamayo.restfoodapi.domains.cozinha.exception.EntidadeEmUsoException;
-import com.cristovantamayo.restfoodapi.domains.cozinha.exception.EntidadeNaoEncontradaException;
 import com.cristovantamayo.restfoodapi.domains.cozinha.model.Cozinha;
-import com.cristovantamayo.restfoodapi.domains.cozinha.repository.CozinhaRepository;
 import com.cristovantamayo.restfoodapi.domains.cozinha.service.CrudCozinhaService;
+import com.cristovantamayo.restfoodapi.exception.EntidadeEmUsoException;
+import com.cristovantamayo.restfoodapi.exception.EntidadeNaoEncontradaException;
 
 @RestController
 @RequestMapping("/cozinhas")
@@ -28,9 +27,6 @@ public class CozinhaController {
 	
 	@Autowired
 	private CrudCozinhaService service;
-
-	@Autowired
-	private CozinhaRepository repository;
 	
 	@GetMapping
 	public List<Cozinha> listar() {
@@ -39,7 +35,7 @@ public class CozinhaController {
 	
 	@GetMapping("/{cozinhaId}")
 	public ResponseEntity<Cozinha> buscar(@PathVariable Long cozinhaId) {
-		Cozinha cozinha = repository.findById(cozinhaId);
+		Cozinha cozinha = service.buscar(cozinhaId);
 		
 		if(cozinha == null)
 			return ResponseEntity.notFound().build();
@@ -56,10 +52,10 @@ public class CozinhaController {
 	@PutMapping("/{cozinhaId}")
 	public ResponseEntity<Cozinha> atualizar(@PathVariable Long cozinhaId, @RequestBody Cozinha cozinha){
 		
-		Cozinha cozinhaAtual = repository.findById(cozinhaId);
+		Cozinha cozinhaAtual = service.buscar(cozinhaId);
 		if(cozinhaAtual != null) {
 			BeanUtils.copyProperties(cozinha, cozinhaAtual, "id");
-			repository.save(cozinhaAtual);
+			cozinhaAtual = service.salvar(cozinhaAtual);
 			return ResponseEntity.ok(cozinhaAtual);
 		}
 		
@@ -67,16 +63,18 @@ public class CozinhaController {
 	}
 	
 	@DeleteMapping("/{cozinhaId}")
-	public ResponseEntity<Cozinha> excluir(@PathVariable Long cozinhaId) {
+	public ResponseEntity<?> excluir(@PathVariable Long cozinhaId) {
 		try {
 			service.excluir(cozinhaId);
 			return ResponseEntity.noContent().build();
 			
 		} catch(EntidadeEmUsoException e) {
-			return ResponseEntity.status(HttpStatus.CONFLICT).build();
+			return ResponseEntity.status(HttpStatus.CONFLICT)
+				.body(e.getMessage());
 			
 		} catch(EntidadeNaoEncontradaException e) {
-			return ResponseEntity.notFound().build();
+			return ResponseEntity.status(HttpStatus.NOT_FOUND)
+				.body(e.getMessage());
 		}
 		
 	}

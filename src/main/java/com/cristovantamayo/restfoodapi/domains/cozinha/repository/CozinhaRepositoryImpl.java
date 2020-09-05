@@ -5,11 +5,11 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cristovantamayo.restfoodapi.domains.cozinha.model.Cozinha;
+import com.cristovantamayo.restfoodapi.exception.EntidadeNaoEncontradaException;
 
 @Repository
 class CozinhaRepositoryImpl implements CozinhaRepository {
@@ -24,8 +24,15 @@ class CozinhaRepositoryImpl implements CozinhaRepository {
 	}
 	
 	@Override
-	public Cozinha findById(Long id) {
-		return manager.find(Cozinha.class, id);
+	public Cozinha findById(Long cozinhaId) {
+		return manager.find(Cozinha.class, cozinhaId);
+	}
+
+	@Override
+	public List<Cozinha> getContaining(String nome) {
+		return manager.createQuery("from Cozinha where nome like :nome", Cozinha.class)
+				.setParameter("nome", "%" + nome + "%")
+				.getResultList();
 	}
 	
 	@Transactional
@@ -36,11 +43,13 @@ class CozinhaRepositoryImpl implements CozinhaRepository {
 	
 	@Transactional
 	@Override
-	public void remove(Long id) {
-		Cozinha cozinha = findById(id);
+	public void remove(Long cozinhaId) {
+		Cozinha cozinha = findById(cozinhaId);
 		
-		if(cozinha == null)
-			throw new EmptyResultDataAccessException(1);
+		if(cozinha == null) {
+			throw new EntidadeNaoEncontradaException(
+				String.format("Não foi encontrada uma Cozinha com ID '%d'", cozinhaId));
+		}
 		
 		manager.remove(cozinha);
 	}

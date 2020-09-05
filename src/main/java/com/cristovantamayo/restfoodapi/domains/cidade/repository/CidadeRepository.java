@@ -6,8 +6,7 @@ import com.cristovantamayo.restfoodapi.domains.cidade.model.Cidade;
 
 public interface CidadeRepository {
 	List<Cidade> getAll();
-	Cidade findById(Long id);
+	Cidade findById(Long cidadeId);
 	Cidade save(Cidade cidade);
-	void remove(Cidade cidade);
-
+	void remove(Long cidadeId);
 }

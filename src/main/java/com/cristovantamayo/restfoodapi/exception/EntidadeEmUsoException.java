@@ -1,4 +1,4 @@
-package com.cristovantamayo.restfoodapi.domains.cozinha.exception;
+package com.cristovantamayo.restfoodapi.exception;
 
 public class EntidadeEmUsoException extends RuntimeException {
 

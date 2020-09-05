@@ -13,9 +13,9 @@ import com.cristovantamayo.restfoodapi.domains.estado.model.Estado;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.Setter;
 
-@Getter
-@AllArgsConstructor
+@Getter @Setter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
 public class Cidade {
@@ -26,9 +26,9 @@ public class Cidade {
 	private Long id;
 	
 	@Column(nullable = false)
-	private String name;
+	private String nome;
 	
 	@ManyToOne
-	@JoinColumn(nullable = false)
+	@JoinColumn(name = "estado_id", nullable = false)
 	private Estado estado;
 }

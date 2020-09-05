@@ -4,23 +4,30 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
-import com.cristovantamayo.restfoodapi.domains.cozinha.exception.EntidadeEmUsoException;
-import com.cristovantamayo.restfoodapi.domains.cozinha.exception.EntidadeNaoEncontradaException;
 import com.cristovantamayo.restfoodapi.domains.cozinha.model.Cozinha;
 import com.cristovantamayo.restfoodapi.domains.cozinha.repository.CozinhaRepository;
+import com.cristovantamayo.restfoodapi.exception.EntidadeEmUsoException;
 
 @Service
 class CrudCozinhaServiceImpl implements CrudCozinhaService {
 	
-	@Autowired
 	CozinhaRepository repository;
+	
+	@Autowired
+	public CrudCozinhaServiceImpl(CozinhaRepository repository) {
+		this.repository = repository;
+	}
 	
 	@Override
 	public List<Cozinha> listar(){
 		return repository.getAll();
+	}
+
+	@Override
+	public Cozinha buscar(Long cozinhaId) {
+		return repository.findById(cozinhaId);
 	}
 	
 	@Override
@@ -33,13 +40,9 @@ class CrudCozinhaServiceImpl implements CrudCozinhaService {
 		try {
 			repository.remove(cozinhaId);
 			
-		} catch (EmptyResultDataAccessException e) {
-			throw new EntidadeNaoEncontradaException(
-				String.format("Cozinha de código %d não pode ser encontrada.", cozinhaId));
-			
 		} catch (DataIntegrityViolationException e) {
 			throw new EntidadeEmUsoException(
-				String.format("Cozinha de código %d não pode ser removida, pois está em uso.", cozinhaId));
+				String.format("A Cozinha de código %d não pode ser removida, pois está em uso.", cozinhaId));
 		}
 	}
 

@@ -5,13 +5,14 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cristovantamayo.restfoodapi.domains.cidade.model.Cidade;
+import com.cristovantamayo.restfoodapi.exception.EntidadeNaoEncontradaException;
 
-@Component
-public class CidadeRepositoryImpl implements CidadeRepository {
+@Repository
+class CidadeRepositoryImpl implements CidadeRepository {
 
 	@PersistenceContext
 	private EntityManager manager;
@@ -23,8 +24,8 @@ public class CidadeRepositoryImpl implements CidadeRepository {
 	}
 	
 	@Override
-	public Cidade findById(Long id) {
-		return manager.find(Cidade.class, id);
+	public Cidade findById(Long cidadeId) {
+		return manager.find(Cidade.class, cidadeId);
 	}
 	
 	@Transactional
@@ -35,8 +36,14 @@ public class CidadeRepositoryImpl implements CidadeRepository {
 	
 	@Transactional
 	@Override
-	public void remove(Cidade cidade) {
-		cidade = findById(cidade.getId());
+	public void remove(Long cidadeId) {
+		Cidade cidade = findById(cidadeId);
+		
+		if(cidade == null) {
+			throw new EntidadeNaoEncontradaException(
+				String.format("O ID %d informado não corresponde a uma Cidade válida", cidadeId));
+		}
+		
 		manager.remove(cidade);
 	}
 
