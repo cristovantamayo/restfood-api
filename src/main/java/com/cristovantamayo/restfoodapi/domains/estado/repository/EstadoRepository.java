@@ -1,13 +1,11 @@
 package com.cristovantamayo.restfoodapi.domains.estado.repository;
 
-import java.util.List;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import com.cristovantamayo.restfoodapi.domains.estado.model.Estado;
 
-public interface EstadoRepository {
-	List<Estado> getAll();
-	Estado findById(Long estadoId);
-	Estado save(Estado estado);
-	void remove(Long estadoId);
-
+@Repository
+public interface EstadoRepository extends JpaRepository<Estado, Long> {
+	
 }

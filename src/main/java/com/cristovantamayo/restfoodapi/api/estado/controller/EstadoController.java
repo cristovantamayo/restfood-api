@@ -1,6 +1,7 @@
 package com.cristovantamayo.restfoodapi.api.estado.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,12 +36,12 @@ public class EstadoController {
 	
 	@GetMapping("/{estadoId}")
 	public ResponseEntity<Estado> buscar(@PathVariable Long estadoId){
-		Estado estado = service.buscar(estadoId);
+		Optional<Estado> estado = service.buscar(estadoId);
 		
-		if(estado == null)
+		if(!estado.isPresent())
 			return ResponseEntity.notFound().build();
 	
-		return ResponseEntity.ok(estado);
+		return ResponseEntity.ok(estado.get());
 	}
 	
 	@PostMapping
@@ -51,14 +52,14 @@ public class EstadoController {
 	
 	@PutMapping("/{estadoId}")
 	public ResponseEntity<?> atualizar(@PathVariable Long estadoId, @RequestBody Estado estado){
-		Estado estadoAtual = service.buscar(estadoId);
+		Optional<Estado> estadoAtual = service.buscar(estadoId);
 		
-		if(estadoAtual == null)
+		if(!estadoAtual.isPresent())
 			return ResponseEntity.notFound().build();
 		
-		BeanUtils.copyProperties(estado, estadoAtual, "id");
-		estadoAtual = service.salvar(estadoAtual);
-		return ResponseEntity.ok(estadoAtual);
+		BeanUtils.copyProperties(estado, estadoAtual.get(), "id");
+		Estado estadoSalvo = service.salvar(estadoAtual.get());
+		return ResponseEntity.ok(estadoSalvo);
 	}
 	
 	@DeleteMapping("/{estadoId}")
@@ -76,7 +77,4 @@ public class EstadoController {
 					.body(e.getMessage());
 		}
 	}
-	
-	
-	
 }

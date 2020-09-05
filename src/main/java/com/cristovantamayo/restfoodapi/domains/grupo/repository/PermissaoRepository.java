@@ -1,13 +1,11 @@
 package com.cristovantamayo.restfoodapi.domains.grupo.repository;
 
-import java.util.List;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import com.cristovantamayo.restfoodapi.domains.grupo.model.Permissao;
 
-public interface PermissaoRepository {
-	List<Permissao> getAll();
-	Permissao findById(Long id);
-	Permissao save(Permissao permissao);
-	void remove(Permissao permissao);
-
+@Repository
+public interface PermissaoRepository extends JpaRepository<Permissao, Long> {
+	
 }

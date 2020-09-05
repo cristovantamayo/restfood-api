@@ -1,6 +1,7 @@
 package com.cristovantamayo.restfoodapi.domains.cozinha.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 import com.cristovantamayo.restfoodapi.domains.cozinha.model.Cozinha;
 import com.cristovantamayo.restfoodapi.domains.cozinha.repository.CozinhaRepository;
 import com.cristovantamayo.restfoodapi.exception.EntidadeEmUsoException;
+import com.cristovantamayo.restfoodapi.exception.EntidadeNaoEncontradaException;
 
 @Service
 class CrudCozinhaServiceImpl implements CrudCozinhaService {
@@ -22,11 +24,11 @@ class CrudCozinhaServiceImpl implements CrudCozinhaService {
 	
 	@Override
 	public List<Cozinha> listar(){
-		return repository.getAll();
+		return repository.findAll();
 	}
 
 	@Override
-	public Cozinha buscar(Long cozinhaId) {
+	public Optional<Cozinha> buscar(Long cozinhaId) {
 		return repository.findById(cozinhaId);
 	}
 	
@@ -37,8 +39,13 @@ class CrudCozinhaServiceImpl implements CrudCozinhaService {
 	
 	@Override
 	public void excluir(Long cozinhaId) {
+		
+		repository.findById(cozinhaId)
+				.orElseThrow(() -> new EntidadeNaoEncontradaException(
+						String.format("O ID %d informado para Cozinha não existe.", cozinhaId)));
+		
 		try {
-			repository.remove(cozinhaId);
+			repository.deleteById(cozinhaId);
 			
 		} catch (DataIntegrityViolationException e) {
 			throw new EntidadeEmUsoException(

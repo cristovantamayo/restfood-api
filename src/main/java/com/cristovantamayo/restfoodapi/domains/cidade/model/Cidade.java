@@ -10,7 +10,6 @@ import javax.persistence.ManyToOne;
 
 import com.cristovantamayo.restfoodapi.domains.estado.model.Estado;
 
-import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;

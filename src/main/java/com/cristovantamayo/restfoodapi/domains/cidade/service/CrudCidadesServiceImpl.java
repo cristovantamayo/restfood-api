@@ -1,6 +1,7 @@
 package com.cristovantamayo.restfoodapi.domains.cidade.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,31 +23,32 @@ class CrudCidadesServiceImpl implements CrudCidadesService {
 
 	@Override
 	public List<Cidade> listar() {
-		return repository.getAll();
+		return repository.findAll();
 	}
 
 	@Override
-	public Cidade buscar(Long cidadeId) {
+	public Optional<Cidade> buscar(Long cidadeId) {
 		return repository.findById(cidadeId);
 	}
 
 	@Override
 	public Cidade salvar(Cidade cidade) {
 		Long estadoId = cidade.getEstado().getId();
-		Estado estado = repositoryEstado.findById(estadoId);
-		
-		if(estado == null) {
-			throw new EntidadeNaoEncontradaException(
-				String.format("O ID '%d' não foi encontrado para estado.", estadoId));
-		}
-		
+		Estado estado = repositoryEstado.findById(estadoId)
+			.orElseThrow(() -> new EntidadeNaoEncontradaException(
+				String.format("O ID %d informado para Estado não existe.", estadoId)));
+				
 		cidade.setEstado(estado);		
 		return repository.save(cidade);
 	}
 
 	@Override
 	public void excluir(Long cidadeId) {
-		repository.remove(cidadeId);		
+		repository.findById(cidadeId)
+			.orElseThrow(() -> new EntidadeNaoEncontradaException(
+				String.format("O ID %d informado para Cidade não existe.", cidadeId)));
+		
+		repository.deleteById(cidadeId);
 	}
 
 }

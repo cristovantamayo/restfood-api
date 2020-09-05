@@ -1,6 +1,7 @@
 package com.cristovantamayo.restfoodapi.domains.estado.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 import com.cristovantamayo.restfoodapi.domains.estado.model.Estado;
 import com.cristovantamayo.restfoodapi.domains.estado.repository.EstadoRepository;
 import com.cristovantamayo.restfoodapi.exception.EntidadeEmUsoException;
+import com.cristovantamayo.restfoodapi.exception.EntidadeNaoEncontradaException;
 
 @Service
 class CrudEstatoServiceImpl implements CrudEstadoService {
@@ -22,11 +24,11 @@ class CrudEstatoServiceImpl implements CrudEstadoService {
 	
 	@Override
 	public List<Estado> listar() {
-		return repository.getAll(); 
+		return repository.findAll(); 
 	}
 
 	@Override
-	public Estado buscar(Long estadoId) {
+	public Optional<Estado> buscar(Long estadoId) {
 		return repository.findById(estadoId);
 	}
 
@@ -37,8 +39,13 @@ class CrudEstatoServiceImpl implements CrudEstadoService {
 
 	@Override
 	public void excluir(Long estadoId) {
+		
+		repository.findById(estadoId)
+			.orElseThrow(() -> new EntidadeNaoEncontradaException(
+				String.format("O ID %d informado para Restaurante não existe.", estadoId)));
+		
 		try {
-			repository.remove(estadoId);
+			repository.deleteById(estadoId);
 			
 		} catch (DataIntegrityViolationException e) {
 			throw new EntidadeEmUsoException(

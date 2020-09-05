@@ -3,6 +3,7 @@ package com.cristovantamayo.restfoodapi.api.restaurante.controller;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,12 +40,12 @@ public class RestauranteController {
 	
 	@GetMapping("/{restauranteId}")
 	public ResponseEntity<Restaurante> buscar(@PathVariable Long restauranteId) {
-		Restaurante restaurante = service.buscar(restauranteId);
+		Optional<Restaurante> restaurante = service.buscar(restauranteId);
 		
-		if(restaurante == null)
+		if(!restaurante.isPresent())
 			return ResponseEntity.notFound().build();
 		
-		return ResponseEntity.ok(restaurante);
+		return ResponseEntity.ok(restaurante.get());
 	}
 	
 	@PostMapping
@@ -67,14 +68,14 @@ public class RestauranteController {
 		@RequestBody Restaurante restaurante){
 		
 		try {
-			Restaurante restauranteAtual = service.buscar(restauranteId);
+			Optional<Restaurante> restauranteAtual = service.buscar(restauranteId);
 			
-			if(restauranteAtual == null)
+			if(!restauranteAtual.isPresent())
 				return ResponseEntity.notFound().build();
 			
-			BeanUtils.copyProperties(restaurante, restauranteAtual, "id");
-			restauranteAtual = service.salvar(restauranteAtual);
-			return ResponseEntity.ok(restauranteAtual);
+			BeanUtils.copyProperties(restaurante, restauranteAtual.get(), "id");
+			Restaurante restauranteSalvo = service.salvar(restauranteAtual.get());
+			return ResponseEntity.ok(restauranteSalvo);
 			
 		} catch(EntidadeNaoEncontradaException e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -86,13 +87,13 @@ public class RestauranteController {
 	public ResponseEntity<?> atualizarParcial(@PathVariable Long restauranteId,
 			@RequestBody Map<String, Object> fieldsPayload){
 	
-		Restaurante restauranteAtual = service.buscar(restauranteId);
+		Optional<Restaurante> restauranteAtual = service.buscar(restauranteId);
 		
-		if(restauranteAtual == null)
+		if(!restauranteAtual.isPresent())
 			return ResponseEntity.notFound().build();
 		
-		merge(fieldsPayload, restauranteAtual);
-		return atualizar(restauranteId, restauranteAtual);
+		merge(fieldsPayload, restauranteAtual.get());
+		return atualizar(restauranteId, restauranteAtual.get());
 	}
 
 	private void merge(Map<String, Object> fieldsPayload, Restaurante restauranteTarget) {

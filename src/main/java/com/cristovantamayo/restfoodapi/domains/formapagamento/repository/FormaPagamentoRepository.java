@@ -1,13 +1,11 @@
 package com.cristovantamayo.restfoodapi.domains.formapagamento.repository;
 
-import java.util.List;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import com.cristovantamayo.restfoodapi.domains.formapagamento.model.FormaPagamento;
 
-public interface FormaPagamentoRepository {
-	List<FormaPagamento> getAll();
-	FormaPagamento findById(Long id);
-	FormaPagamento save(FormaPagamento formaPagamento);
-	void remove(FormaPagamento formaPagamento);
-
+@Repository
+public interface FormaPagamentoRepository extends JpaRepository<FormaPagamento, Long> {
+	
 }

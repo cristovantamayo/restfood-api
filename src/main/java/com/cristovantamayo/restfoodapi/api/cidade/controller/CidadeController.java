@@ -1,6 +1,7 @@
 package com.cristovantamayo.restfoodapi.api.cidade.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,8 +38,13 @@ public class CidadeController {
 	}
 	
 	@GetMapping("/{cidadeId}")
-	public Cidade buscar(@PathVariable Long cidadeId) {
-		return service.buscar(cidadeId);
+	public ResponseEntity<Cidade> buscar(@PathVariable Long cidadeId) {
+		Optional<Cidade> cidade = service.buscar(cidadeId);
+		
+		if(!cidade.isPresent())
+			return ResponseEntity.notFound().build();
+		
+		return ResponseEntity.ok(cidade.get());
 	}
 	
 	@PostMapping
@@ -60,14 +66,14 @@ public class CidadeController {
 	public ResponseEntity<Cidade> atualizar(@PathVariable Long cidadeId,
 		@RequestBody Cidade cidade){
 		
-		Cidade cidadeAtual = service.buscar(cidadeId);
+		Optional<Cidade> cidadeAtual = service.buscar(cidadeId);
 		
-		if(cidadeAtual == null)
+		if(!cidadeAtual.isPresent())
 			ResponseEntity.notFound().build();
 		
-		BeanUtils.copyProperties(cidade, cidadeAtual, "id");
-		cidadeAtual = service.salvar(cidadeAtual);
-		return ResponseEntity.ok(cidadeAtual);
+		BeanUtils.copyProperties(cidade, cidadeAtual.get(), "id");
+		Cidade cidadeSalva = service.salvar(cidadeAtual.get());
+		return ResponseEntity.ok(cidadeSalva);
 	}
 	
 	@DeleteMapping("/{cidadeId}")

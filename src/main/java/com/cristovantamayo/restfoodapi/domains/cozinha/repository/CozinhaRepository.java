@@ -1,15 +1,13 @@
 package com.cristovantamayo.restfoodapi.domains.cozinha.repository;
 
-import java.util.List;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import com.cristovantamayo.restfoodapi.domains.cozinha.model.Cozinha;
 
-public interface CozinhaRepository {
+@Repository
+public interface CozinhaRepository extends JpaRepository<Cozinha, Long> {
 	
-	List<Cozinha> getAll();
-	List<Cozinha> getContaining(String nome);
-	Cozinha findById(Long id);
-	Cozinha save(Cozinha cozinha);
-	void remove(Long id);
+	//List<Cozinha> getContaining(String nome);
 
 }

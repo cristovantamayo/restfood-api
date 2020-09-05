@@ -1,6 +1,7 @@
 package com.cristovantamayo.restfoodapi.domains.restaurante.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,23 +23,20 @@ class CrudRestauranteServiceImpl implements CrudRestauranteService {
 
 	@Override
 	public List<Restaurante> listar() {
-		return repository.getAll();
+		return repository.findAll();
 	}
 
 	@Override
-	public Restaurante buscar(Long restauranteId) {
+	public Optional<Restaurante> buscar(Long restauranteId) {
 		return repository.findById(restauranteId);
 	}
 
 	@Override
 	public Restaurante salvar(Restaurante restaurante) {
 		Long cozinhaId = restaurante.getCozinha().getId();
-		Cozinha cozinha = repositoryCozinha.findById(cozinhaId);
-		
-		if(cozinha == null) {
-			throw new EntidadeNaoEncontradaException(
-				String.format("Não existe cadastro de cozinha com código %d", cozinhaId));
-		}
+		Cozinha cozinha = repositoryCozinha.findById(cozinhaId)
+			.orElseThrow(() -> new EntidadeNaoEncontradaException(
+				String.format("O ID %d informado para Cozinha não existe.", cozinhaId)));
 		
 		restaurante.setCozinha(cozinha);
 		return repository.save(restaurante);
@@ -46,7 +44,11 @@ class CrudRestauranteServiceImpl implements CrudRestauranteService {
 
 	@Override
 	public void excluir(Long restauranteId) {
-		repository.remove(restauranteId);
+		repository.findById(restauranteId)
+			.orElseThrow(() -> new EntidadeNaoEncontradaException(
+				String.format("O ID %d informado para Restaurante não existe.", restauranteId)));
+			
+		repository.deleteById(restauranteId);
 	}
 
 }
