@@ -8,5 +8,7 @@ import com.cristovantamayo.restfoodapi.domains.restaurante.model.Restaurante;
 public interface RestauranteRepositoryQueries {
 
 	List<Restaurante> find(String nome, BigDecimal taxaInicial, BigDecimal taxaFinal);
+	
+	List<Restaurante> findComFreteGratis(String nome);
 
 }

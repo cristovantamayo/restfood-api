@@ -1,5 +1,8 @@
 package com.cristovantamayo.restfoodapi.domains.restaurante.repository;
 
+import static com.cristovantamayo.restfoodapi.domains.restaurante.repository.spec.RestauranteSpecs.comFreteGratis;
+import static com.cristovantamayo.restfoodapi.domains.restaurante.repository.spec.RestauranteSpecs.comNomeCozinhaSemelhante;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +15,8 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
@@ -22,6 +27,9 @@ public class RestauranteRepositoryImpl implements RestauranteRepositoryQueries {
 
 	@PersistenceContext
 	private EntityManager manager;
+	
+	@Autowired @Lazy
+	private RestauranteRepository repository;
 	
 	@Override
 	public List<Restaurante> find(String nome, BigDecimal taxaInicial, BigDecimal taxaFinal) {
@@ -45,6 +53,11 @@ public class RestauranteRepositoryImpl implements RestauranteRepositoryQueries {
 		
 		TypedQuery<Restaurante> query = manager.createQuery(criteria);
 		return query.getResultList();
+	}
+
+	@Override
+	public List<Restaurante> findComFreteGratis(String nomeCozinha) {
+		return repository.findAll(comFreteGratis().and(comNomeCozinhaSemelhante(nomeCozinha)));
 	}
 	
 }

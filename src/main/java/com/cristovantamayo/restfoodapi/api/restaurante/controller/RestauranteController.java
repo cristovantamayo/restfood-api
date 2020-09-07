@@ -1,8 +1,5 @@
 package com.cristovantamayo.restfoodapi.api.restaurante.controller;
 
-import static com.cristovantamayo.restfoodapi.domains.restaurante.repository.spec.RestauranteSpecs.comFreteGratis;
-import static com.cristovantamayo.restfoodapi.domains.restaurante.repository.spec.RestauranteSpecs.comNomeCozinhaSemelhante;
-
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.util.List;
@@ -73,7 +70,7 @@ public class RestauranteController {
 	
 	@GetMapping("/com-frete-gratis")
 	public List<Restaurante> restaurantesComFreteGratis(String nomeCozinha) {
-		return repository.findAll(comFreteGratis().and(comNomeCozinhaSemelhante(nomeCozinha)));
+		return repository.findComFreteGratis(nomeCozinha);
 	}
 	
 	@PostMapping
