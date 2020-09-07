@@ -1,7 +1,6 @@
 package com.cristovantamayo.restfoodapi.api.restaurante.controller;
 
 import java.lang.reflect.Field;
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -23,7 +22,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cristovantamayo.restfoodapi.domains.restaurante.model.Restaurante;
-import com.cristovantamayo.restfoodapi.domains.restaurante.repository.RestauranteRepository;
 import com.cristovantamayo.restfoodapi.domains.restaurante.service.CrudRestauranteService;
 import com.cristovantamayo.restfoodapi.exception.EntidadeNaoEncontradaException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -34,9 +32,6 @@ public class RestauranteController {
 	
 	@Autowired
 	CrudRestauranteService service;
-	
-	@Autowired
-	RestauranteRepository repository;
 	
 	@GetMapping
 	public List<Restaurante> listar(){
@@ -51,26 +46,6 @@ public class RestauranteController {
 			return ResponseEntity.notFound().build();
 		
 		return ResponseEntity.ok(restaurante.get());
-	}
-	
-	@GetMapping("/por-taxa-frete")
-	public List<Restaurante> buscarPorTaxaFrete(BigDecimal taxaInicial, BigDecimal taxaFinal){
-		return service.buscarPorTaxaFrete(taxaInicial, taxaFinal);
-	}
-	
-	@GetMapping("/por-nome-cozinha-e-taxa-frete")
-	public List<Restaurante> buscarPorNomeDeCozinhaContendoETaxaFrete(String nomeCozinha, BigDecimal taxaInicial, BigDecimal taxaFinal){
-		return service.buscarPorNomeDeCozinhaContendoETaxaFrete(nomeCozinha, taxaInicial, taxaFinal);
-	}
-	
-	@GetMapping("/count-por-cozinha")
-	public Integer contarPorCozinhas(Long cozinhaId){
-		return service.contarPorCozinhas(cozinhaId);
-	}
-	
-	@GetMapping("/com-frete-gratis")
-	public List<Restaurante> restaurantesComFreteGratis(String nomeCozinha) {
-		return repository.findComFreteGratis(nomeCozinha);
 	}
 	
 	@PostMapping
