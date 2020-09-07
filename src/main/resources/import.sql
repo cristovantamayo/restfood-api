@@ -12,3 +12,9 @@ INSERT INTO cidade (nome, estado_id) VALUES ('Taubaté', 1)
 INSERT INTO cidade (nome, estado_id) VALUES ('São José dos Campos', 1)
 INSERT INTO cidade (nome, estado_id) VALUES ('Florianopolis', 2)
 INSERT INTO cidade (nome, estado_id) VALUES ('Bombinhas', 2)
+
+INSERT INTO forma_pagamento (id, descricao) VALUES (1, 'Dinheiro')
+INSERT INTO forma_pagamento (id, descricao) VALUES (2, 'Cartão de Débito')
+INSERT INTO forma_pagamento (id, descricao) VALUES (3, 'Cartão de Crédito')
+
+INSERT INTO restaurante_forma_pagamento (restaurante_id, forma_pagamento_id ) VALUES (1, 1), (1, 2), (1, 3), (2, 3), (3, 2), (3, 3);
