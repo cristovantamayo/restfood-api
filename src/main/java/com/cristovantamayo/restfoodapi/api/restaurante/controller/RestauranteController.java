@@ -1,6 +1,7 @@
 package com.cristovantamayo.restfoodapi.api.restaurante.controller;
 
 import java.lang.reflect.Field;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -46,6 +47,21 @@ public class RestauranteController {
 			return ResponseEntity.notFound().build();
 		
 		return ResponseEntity.ok(restaurante.get());
+	}
+	
+	@GetMapping("/por-taxa-frete")
+	public List<Restaurante> buscarPorTaxaFrete(BigDecimal taxaInicial, BigDecimal taxaFinal){
+		return service.buscarPorTaxaFrete(taxaInicial, taxaFinal);
+	}
+	
+	@GetMapping("/por-nome-cozinha-e-taxa-frete")
+	public List<Restaurante> buscarPorNomeDeCozinhaContendoETaxaFrete(String nomeCozinha, BigDecimal taxaInicial, BigDecimal taxaFinal){
+		return service.buscarPorNomeDeCozinhaContendoETaxaFrete(nomeCozinha, taxaInicial, taxaFinal);
+	}
+	
+	@GetMapping("/count-por-cozinha")
+	public Integer contarPorCozinhas(Long cozinhaId){
+		return service.contarPorCozinhas(cozinhaId);
 	}
 	
 	@PostMapping

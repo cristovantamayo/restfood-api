@@ -33,6 +33,11 @@ class CrudCozinhaServiceImpl implements CrudCozinhaService {
 	}
 	
 	@Override
+	public List<Cozinha> buscarPorNome(String nome) {
+		return repository.findCozinhasByNomeContains(nome);
+	}
+	
+	@Override
 	public Cozinha salvar(Cozinha cozinha) {
 		return repository.save(cozinha);
 	}
@@ -51,6 +56,11 @@ class CrudCozinhaServiceImpl implements CrudCozinhaService {
 			throw new EntidadeEmUsoException(
 				String.format("A Cozinha de código %d não pode ser removida, pois está em uso.", cozinhaId));
 		}
+	}
+
+	@Override
+	public Boolean cozinhaExiste(String nome) {
+		return repository.existsByNome(nome);
 	}
 
 }

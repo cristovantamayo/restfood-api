@@ -1,5 +1,6 @@
 package com.cristovantamayo.restfoodapi.domains.restaurante.service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,6 +31,17 @@ class CrudRestauranteServiceImpl implements CrudRestauranteService {
 	public Optional<Restaurante> buscar(Long restauranteId) {
 		return repository.findById(restauranteId);
 	}
+	
+	@Override
+	public List<Restaurante> buscarPorTaxaFrete(BigDecimal taxaInicial, BigDecimal taxaFinal) {
+		return repository.findByTaxaFreteBetween(taxaInicial, taxaFinal);
+	}
+	
+	@Override
+	public List<Restaurante> buscarPorNomeDeCozinhaContendoETaxaFrete(String nomeCozinha, BigDecimal taxaInicial, BigDecimal taxaFinal) {
+		//return repository.buscarPorCozinhaNomeETaxaFrete(nomeCozinha, taxaInicial, taxaFinal);
+		return repository.find(nomeCozinha, taxaInicial, taxaFinal);
+	}
 
 	@Override
 	public Restaurante salvar(Restaurante restaurante) {
@@ -49,6 +61,11 @@ class CrudRestauranteServiceImpl implements CrudRestauranteService {
 				String.format("O ID %d informado para Restaurante não existe.", restauranteId)));
 			
 		repository.deleteById(restauranteId);
+	}
+
+	@Override
+	public Integer contarPorCozinhas(Long cozinhaId) {
+		return repository.countByCozinhaId(cozinhaId);
 	}
 
 }

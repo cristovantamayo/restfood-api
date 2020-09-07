@@ -8,6 +8,8 @@ import com.cristovantamayo.restfoodapi.domains.cozinha.model.Cozinha;
 public interface CrudCozinhaService {
 	List<Cozinha> listar();
 	Optional<Cozinha> buscar(Long cozinhaId);
+	List<Cozinha> buscarPorNome(String nome);
 	Cozinha salvar(Cozinha cozinha);
 	void excluir(Long cozinhaId);
+	Boolean cozinhaExiste(String nome);
 }
