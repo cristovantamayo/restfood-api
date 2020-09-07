@@ -1,5 +1,8 @@
 package com.cristovantamayo.restfoodapi.api.restaurante.controller;
 
+import static com.cristovantamayo.restfoodapi.domains.restaurante.repository.spec.RestauranteSpecs.comFreteGratis;
+import static com.cristovantamayo.restfoodapi.domains.restaurante.repository.spec.RestauranteSpecs.comNomeCozinhaSemelhante;
+
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.util.List;
@@ -24,8 +27,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.cristovantamayo.restfoodapi.domains.restaurante.model.Restaurante;
 import com.cristovantamayo.restfoodapi.domains.restaurante.repository.RestauranteRepository;
-import com.cristovantamayo.restfoodapi.domains.restaurante.repository.spec.RestauranteComFreteGratisSpec;
-import com.cristovantamayo.restfoodapi.domains.restaurante.repository.spec.RestauranteComNomeSemelhanteSpec;
 import com.cristovantamayo.restfoodapi.domains.restaurante.service.CrudRestauranteService;
 import com.cristovantamayo.restfoodapi.exception.EntidadeNaoEncontradaException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -70,14 +71,9 @@ public class RestauranteController {
 		return service.contarPorCozinhas(cozinhaId);
 	}
 	
-	@GetMapping("/com-frete-gratis/{nomeCozinha}")
-	public List<Restaurante> restaurantesComFreteGratis(@PathVariable String nomeCozinha) {
-		
-		RestauranteComFreteGratisSpec freteGratisSpec = new RestauranteComFreteGratisSpec();
-		RestauranteComNomeSemelhanteSpec nomeSemelhanteSpec = new RestauranteComNomeSemelhanteSpec(nomeCozinha);
-		
-		return repository.findAll(freteGratisSpec.and(nomeSemelhanteSpec));
-				
+	@GetMapping("/com-frete-gratis")
+	public List<Restaurante> restaurantesComFreteGratis(String nomeCozinha) {
+		return repository.findAll(comFreteGratis().and(comNomeCozinhaSemelhante(nomeCozinha)));
 	}
 	
 	@PostMapping
