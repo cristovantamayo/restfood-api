@@ -51,6 +51,7 @@ class CrudCozinhaServiceImpl implements CrudCozinhaService {
 		} catch (EmptyResultDataAccessException e) {
 			throw new EntidadeNaoEncontradaException(
 				String.format("O ID %d informado para Cozinha não existe.", cozinhaId));
+			
 		} catch (DataIntegrityViolationException e) {
 			throw new EntidadeEmUsoException(
 				String.format("A Cozinha de código %d não pode ser removida, pois está em uso.", cozinhaId));
