@@ -53,6 +53,7 @@ class CrudCozinhaServiceImpl implements CrudCozinhaService {
 		
 		try {
 			repository.deleteById(cozinhaId);
+			
 		} catch (EmptyResultDataAccessException e) {
 			throw new EntidadeNaoEncontradaException(
 				String.format(MSG_COZINHA_NAO_ENCONTRADA, cozinhaId));

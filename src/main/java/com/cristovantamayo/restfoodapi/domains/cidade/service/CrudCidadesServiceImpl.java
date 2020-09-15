@@ -4,22 +4,30 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import com.cristovantamayo.restfoodapi.domains.cidade.model.Cidade;
 import com.cristovantamayo.restfoodapi.domains.cidade.repository.CidadeRepository;
 import com.cristovantamayo.restfoodapi.domains.estado.model.Estado;
-import com.cristovantamayo.restfoodapi.domains.estado.repository.EstadoRepository;
+import com.cristovantamayo.restfoodapi.domains.estado.service.CrudEstadoService;
+import com.cristovantamayo.restfoodapi.exception.EntidadeEmUsoException;
 import com.cristovantamayo.restfoodapi.exception.EntidadeNaoEncontradaException;
 
 @Service
 class CrudCidadesServiceImpl implements CrudCidadesService {
 	
+	private static final String MSG_CIDADE_EM_USO =
+			"A Cidade de código %d não pode ser removida, pois está em uso.";
+	private static final String MSG_CIDADE_NAO_ENCONTRADA =
+			"O ID %d informado para Cidade não existe.";
+
 	@Autowired
 	CidadeRepository repository;
 	
 	@Autowired
-	EstadoRepository repositoryEstado;
+	CrudEstadoService servicoEstado;
 
 	@Override
 	public List<Cidade> listar() {
@@ -34,21 +42,31 @@ class CrudCidadesServiceImpl implements CrudCidadesService {
 	@Override
 	public Cidade salvar(Cidade cidade) {
 		Long estadoId = cidade.getEstado().getId();
-		Estado estado = repositoryEstado.findById(estadoId)
-			.orElseThrow(() -> new EntidadeNaoEncontradaException(
-				String.format("O ID %d informado para Estado não existe.", estadoId)));
-				
+		Estado estado = servicoEstado.getOrFail(estadoId);
 		cidade.setEstado(estado);		
 		return repository.save(cidade);
 	}
 
 	@Override
 	public void excluir(Long cidadeId) {
-		repository.findById(cidadeId)
+		try {
+			repository.deleteById(cidadeId);
+			
+		} catch (EmptyResultDataAccessException e) {
+			throw new EntidadeNaoEncontradaException(
+				String.format(MSG_CIDADE_NAO_ENCONTRADA, cidadeId));
+			
+		} catch (DataIntegrityViolationException e) {
+			throw new EntidadeEmUsoException(
+				String.format(MSG_CIDADE_EM_USO, cidadeId));
+		}
+	}
+
+	@Override
+	public Cidade getOrFail(Long cidadeId) {
+		return repository.findById(cidadeId)
 			.orElseThrow(() -> new EntidadeNaoEncontradaException(
-				String.format("O ID %d informado para Cidade não existe.", cidadeId)));
-		
-		repository.deleteById(cidadeId);
+				String.format(MSG_CIDADE_NAO_ENCONTRADA, cidadeId)));
 	}
 
 }

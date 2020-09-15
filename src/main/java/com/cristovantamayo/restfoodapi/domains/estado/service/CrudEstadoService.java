@@ -10,4 +10,5 @@ public interface CrudEstadoService {
 	Optional<Estado> buscar(Long estadoId);
 	Estado salvar(Estado estado);
 	void excluir(Long estadoId);
+	Estado getOrFail(Long estadoId);
 }

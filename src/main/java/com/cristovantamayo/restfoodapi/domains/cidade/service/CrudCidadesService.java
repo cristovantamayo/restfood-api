@@ -10,4 +10,5 @@ public interface CrudCidadesService {
 	Optional<Cidade> buscar(Long cidadeId);
 	Cidade salvar(Cidade cidade);
 	void excluir(Long cidadeId);
+	Cidade getOrFail(Long cidadeId);
 }

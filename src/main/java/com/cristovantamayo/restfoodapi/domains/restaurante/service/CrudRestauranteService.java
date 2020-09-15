@@ -15,5 +15,6 @@ public interface CrudRestauranteService {
 	Restaurante salvar(Restaurante restaurante);
 	void excluir(Long restauranteId);
 	Integer contarPorCozinhas(Long cozinhaId);
+	Restaurante getOrFail(Long restauranteId);
 
 }

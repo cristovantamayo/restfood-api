@@ -5,22 +5,31 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import com.cristovantamayo.restfoodapi.domains.cozinha.model.Cozinha;
-import com.cristovantamayo.restfoodapi.domains.cozinha.repository.CozinhaRepository;
+import com.cristovantamayo.restfoodapi.domains.cozinha.service.CrudCozinhaService;
 import com.cristovantamayo.restfoodapi.domains.restaurante.model.Restaurante;
 import com.cristovantamayo.restfoodapi.domains.restaurante.repository.RestauranteRepository;
+import com.cristovantamayo.restfoodapi.exception.EntidadeEmUsoException;
 import com.cristovantamayo.restfoodapi.exception.EntidadeNaoEncontradaException;
 
 @Service
 class CrudRestauranteServiceImpl implements CrudRestauranteService {
 	
+	private static final String MSG_RESTAURANTE_EM_USO = 
+		"o Restaurante de código %d não pode ser removido, pois está em uso.";
+
+	private static final String MSG_RESTAURANTE_NAO_ENCONTRADO = 
+		"O ID %d informado para Restaurante não existe.";
+
 	@Autowired
 	RestauranteRepository repository;
 	
 	@Autowired
-	CozinhaRepository repositoryCozinha;
+	CrudCozinhaService serviceCozinha;
 
 	@Override
 	public List<Restaurante> listar() {
@@ -39,33 +48,42 @@ class CrudRestauranteServiceImpl implements CrudRestauranteService {
 	
 	@Override
 	public List<Restaurante> buscarPorNomeDeCozinhaContendoETaxaFrete(String nomeCozinha, BigDecimal taxaInicial, BigDecimal taxaFinal) {
-		//return repository.buscarPorCozinhaNomeETaxaFrete(nomeCozinha, taxaInicial, taxaFinal);
 		return repository.find(nomeCozinha, taxaInicial, taxaFinal);
 	}
 
 	@Override
 	public Restaurante salvar(Restaurante restaurante) {
 		Long cozinhaId = restaurante.getCozinha().getId();
-		Cozinha cozinha = repositoryCozinha.findById(cozinhaId)
-			.orElseThrow(() -> new EntidadeNaoEncontradaException(
-				String.format("O ID %d informado para Cozinha não existe.", cozinhaId)));
-		
+		Cozinha cozinha = serviceCozinha.getOrFail(cozinhaId);
 		restaurante.setCozinha(cozinha);
 		return repository.save(restaurante);
 	}
 
 	@Override
 	public void excluir(Long restauranteId) {
-		repository.findById(restauranteId)
-			.orElseThrow(() -> new EntidadeNaoEncontradaException(
-				String.format("O ID %d informado para Restaurante não existe.", restauranteId)));
+		try {
+			repository.deleteById(restauranteId);
 			
-		repository.deleteById(restauranteId);
+		} catch(EmptyResultDataAccessException e) {
+			throw new EntidadeNaoEncontradaException(
+				String.format(MSG_RESTAURANTE_NAO_ENCONTRADO, restauranteId));
+			
+		} catch(DataIntegrityViolationException e) {
+			throw new EntidadeEmUsoException(
+				String.format(MSG_RESTAURANTE_EM_USO, restauranteId));
+		}
 	}
 
 	@Override
 	public Integer contarPorCozinhas(Long cozinhaId) {
 		return repository.countByCozinhaId(cozinhaId);
+	}
+
+	@Override
+	public Restaurante getOrFail(Long restauranteId) {
+		return repository.findById(restauranteId)
+			.orElseThrow(() -> new EntidadeNaoEncontradaException(
+				String.format(MSG_RESTAURANTE_NAO_ENCONTRADO, restauranteId)));
 	}
 
 }

@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import com.cristovantamayo.restfoodapi.domains.estado.model.Estado;
@@ -15,6 +16,11 @@ import com.cristovantamayo.restfoodapi.exception.EntidadeNaoEncontradaException;
 @Service
 class CrudEstatoServiceImpl implements CrudEstadoService {
 
+	private static final String MSG_ESTADO_EM_USO = 
+			"o Estado de código %d não pode ser removido, pois está em uso.";
+	private static final String MSG_ESTADO_NAO_ENCONTRADO = 
+			"O ID %d informado para Estado não existe.";
+	
 	EstadoRepository repository;
 	
 	@Autowired
@@ -39,18 +45,25 @@ class CrudEstatoServiceImpl implements CrudEstadoService {
 
 	@Override
 	public void excluir(Long estadoId) {
-		
-		repository.findById(estadoId)
-			.orElseThrow(() -> new EntidadeNaoEncontradaException(
-				String.format("O ID %d informado para Restaurante não existe.", estadoId)));
-		
 		try {
 			repository.deleteById(estadoId);
 			
+		} catch (EmptyResultDataAccessException e) {
+			throw new EntidadeNaoEncontradaException(
+					String.format(MSG_ESTADO_NAO_ENCONTRADO, estadoId));
+			
 		} catch (DataIntegrityViolationException e) {
 			throw new EntidadeEmUsoException(
-				String.format("o Estado de código %d não pode ser removido, pois está em uso.", estadoId));
+				String.format(MSG_ESTADO_EM_USO, estadoId));
 		}
+	}
+
+	@Override
+	public Estado getOrFail(Long estadoId) {
+		return repository.findById(estadoId)
+			.orElseThrow(() -> new EntidadeNaoEncontradaException(
+				String.format(MSG_ESTADO_NAO_ENCONTRADO, estadoId)));
+			
 	}
 
 }
