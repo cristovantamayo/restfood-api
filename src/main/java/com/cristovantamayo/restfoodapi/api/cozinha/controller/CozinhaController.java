@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.cristovantamayo.restfoodapi.domains.cozinha.model.Cozinha;
 import com.cristovantamayo.restfoodapi.domains.cozinha.service.CrudCozinhaService;
@@ -76,7 +77,17 @@ public class CozinhaController {
 	@DeleteMapping("/{cozinhaId}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void excluir(@PathVariable Long cozinhaId) {
-		service.excluir(cozinhaId);
+		try {
+			service.excluir(cozinhaId);
+		} catch (EntidadeNaoEncontradaException e) {
+			throw new ResponseStatusException(
+				HttpStatus.NOT_FOUND,
+				e.getMessage());
+		} catch (EntidadeEmUsoException e) {
+			throw new ResponseStatusException(
+				HttpStatus.CONFLICT,
+				e.getMessage());
+		}
 	}
 	
 }

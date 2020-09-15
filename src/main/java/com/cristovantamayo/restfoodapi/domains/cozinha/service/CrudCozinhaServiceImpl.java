@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import com.cristovantamayo.restfoodapi.domains.cozinha.model.Cozinha;
@@ -45,13 +46,11 @@ class CrudCozinhaServiceImpl implements CrudCozinhaService {
 	@Override
 	public void excluir(Long cozinhaId) {
 		
-		repository.findById(cozinhaId)
-				.orElseThrow(() -> new EntidadeNaoEncontradaException(
-						String.format("O ID %d informado para Cozinha não existe.", cozinhaId)));
-		
 		try {
 			repository.deleteById(cozinhaId);
-			
+		} catch (EmptyResultDataAccessException e) {
+			throw new EntidadeNaoEncontradaException(
+				String.format("O ID %d informado para Cozinha não existe.", cozinhaId));
 		} catch (DataIntegrityViolationException e) {
 			throw new EntidadeEmUsoException(
 				String.format("A Cozinha de código %d não pode ser removida, pois está em uso.", cozinhaId));
