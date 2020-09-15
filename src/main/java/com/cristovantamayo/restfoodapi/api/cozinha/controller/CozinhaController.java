@@ -16,12 +16,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 
 import com.cristovantamayo.restfoodapi.domains.cozinha.model.Cozinha;
 import com.cristovantamayo.restfoodapi.domains.cozinha.service.CrudCozinhaService;
-import com.cristovantamayo.restfoodapi.exception.EntidadeEmUsoException;
-import com.cristovantamayo.restfoodapi.exception.EntidadeNaoEncontradaException;
 
 @RestController
 @RequestMapping("/cozinhas")
@@ -36,13 +33,8 @@ public class CozinhaController {
 	}
 	
 	@GetMapping("/{cozinhaId}")
-	public ResponseEntity<Cozinha> buscar(@PathVariable Long cozinhaId) {
-		Optional<Cozinha> cozinha = service.buscar(cozinhaId);
-		
-		if(!cozinha.isPresent())
-			return ResponseEntity.notFound().build();
-			
-		return ResponseEntity.ok(cozinha.get());
+	public Cozinha buscar(@PathVariable Long cozinhaId) {
+		return service.getOrFail(cozinhaId);
 	}
 	
 	@GetMapping("/por-nome")
@@ -62,16 +54,10 @@ public class CozinhaController {
 	}
 	
 	@PutMapping("/{cozinhaId}")
-	public ResponseEntity<Cozinha> atualizar(@PathVariable Long cozinhaId, @RequestBody Cozinha cozinha){
-		
-		Optional<Cozinha> cozinhaAtual = service.buscar(cozinhaId);
-		
-		if(!cozinhaAtual.isPresent())
-			return ResponseEntity.notFound().build();
-			
-		BeanUtils.copyProperties(cozinha, cozinhaAtual.get(), "id");
-		Cozinha cozinhaSalva = service.salvar(cozinhaAtual.get());
-		return ResponseEntity.ok(cozinhaSalva);	
+	public Cozinha atualizar(@PathVariable Long cozinhaId, @RequestBody Cozinha cozinha){
+		Cozinha cozinhaAtual = service.getOrFail(cozinhaId);	
+		BeanUtils.copyProperties(cozinha, cozinhaAtual, "id");
+		return service.salvar(cozinhaAtual);
 	}
 	
 	@DeleteMapping("/{cozinhaId}")

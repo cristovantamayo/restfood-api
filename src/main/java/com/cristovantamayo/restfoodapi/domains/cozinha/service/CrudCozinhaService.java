@@ -12,4 +12,5 @@ public interface CrudCozinhaService {
 	Cozinha salvar(Cozinha cozinha);
 	void excluir(Long cozinhaId);
 	Boolean cozinhaExiste(String nome);
+	Cozinha getOrFail(Long cozinhaId);
 }
