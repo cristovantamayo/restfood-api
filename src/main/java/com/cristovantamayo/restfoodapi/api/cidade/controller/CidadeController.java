@@ -17,7 +17,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.cristovantamayo.restfoodapi.domains.cidade.model.Cidade;
 import com.cristovantamayo.restfoodapi.domains.cidade.service.CrudCidadesService;
+import com.cristovantamayo.restfoodapi.domains.estado.exception.EstadoNaoEncontradoException;
 import com.cristovantamayo.restfoodapi.domains.estado.repository.EstadoRepository;
+import com.cristovantamayo.restfoodapi.exception.NegocioException;
 
 @RestController
 @RequestMapping("/cidades")
@@ -42,16 +44,24 @@ public class CidadeController {
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	public Cidade salvar(@RequestBody Cidade cidade){
-		return service.salvar(cidade);
+		try {
+			return service.salvar(cidade);
+		} catch (EstadoNaoEncontradoException e) {
+			throw new NegocioException(e.getMessage(), e);
+		}
 	}
 	
 	@PutMapping("/{cidadeId}")
 	public Cidade atualizar(@PathVariable Long cidadeId,
 		@RequestBody Cidade cidade){
 		
-		Cidade cidadeAtual = service.getOrFail(cidadeId);
-		BeanUtils.copyProperties(cidade, cidadeAtual, "id");
-		return service.salvar(cidadeAtual);
+		try {
+			Cidade cidadeAtual = service.getOrFail(cidadeId);
+			BeanUtils.copyProperties(cidade, cidadeAtual, "id");		
+			return service.salvar(cidadeAtual);
+		} catch (EstadoNaoEncontradoException e) {
+			throw new NegocioException(e.getMessage(), e);
+		}
 	}
 	
 	@DeleteMapping("/{cidadeId}")

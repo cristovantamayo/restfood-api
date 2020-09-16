@@ -19,8 +19,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cristovantamayo.restfoodapi.domains.cozinha.exception.CozinhaNaoEncontradaException;
 import com.cristovantamayo.restfoodapi.domains.restaurante.model.Restaurante;
 import com.cristovantamayo.restfoodapi.domains.restaurante.service.CrudRestauranteService;
+import com.cristovantamayo.restfoodapi.exception.NegocioException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RestController
@@ -43,7 +45,11 @@ public class RestauranteController {
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	public Restaurante salvar(@RequestBody Restaurante restaurante) {
-		return service.salvar(restaurante);
+		try {
+			return service.salvar(restaurante);
+		} catch (CozinhaNaoEncontradaException e) {
+			throw new NegocioException(e.getMessage(), e);
+		}
 	}
 	
 	@PutMapping("/{restauranteId}")
@@ -59,7 +65,12 @@ public class RestauranteController {
 			"endereco", 
 			"createdAt",
 			"produtos");
-		return service.salvar(restauranteAtual);
+		
+		try {
+			return service.salvar(restauranteAtual);
+		} catch (CozinhaNaoEncontradaException e) {
+			throw new NegocioException(e.getMessage(), e);
+		}
 	}
 	
 	@PatchMapping("/{restauranteId}")

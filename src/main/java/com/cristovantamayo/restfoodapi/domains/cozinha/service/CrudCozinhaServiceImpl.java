@@ -8,18 +8,16 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
+import com.cristovantamayo.restfoodapi.domains.cozinha.exception.CozinhaNaoEncontradaException;
 import com.cristovantamayo.restfoodapi.domains.cozinha.model.Cozinha;
 import com.cristovantamayo.restfoodapi.domains.cozinha.repository.CozinhaRepository;
 import com.cristovantamayo.restfoodapi.exception.EntidadeEmUsoException;
-import com.cristovantamayo.restfoodapi.exception.EntidadeNaoEncontradaException;
 
 @Service
 class CrudCozinhaServiceImpl implements CrudCozinhaService {
 	
 	private static final String MSG_COZINHA_EM_USO =
 			"A Cozinha de código %d não pode ser removida, pois está em uso.";
-	private static final String MSG_COZINHA_NAO_ENCONTRADA = 
-			"O ID %d informado para Cozinha não existe.";
 	
 	CozinhaRepository repository;
 	
@@ -55,8 +53,7 @@ class CrudCozinhaServiceImpl implements CrudCozinhaService {
 			repository.deleteById(cozinhaId);
 			
 		} catch (EmptyResultDataAccessException e) {
-			throw new EntidadeNaoEncontradaException(
-				String.format(MSG_COZINHA_NAO_ENCONTRADA, cozinhaId));
+			throw new CozinhaNaoEncontradaException(cozinhaId);
 			
 		} catch (DataIntegrityViolationException e) {
 			throw new EntidadeEmUsoException(
@@ -71,8 +68,7 @@ class CrudCozinhaServiceImpl implements CrudCozinhaService {
 	
 	public Cozinha getOrFail(Long cozinhaId) {
 		return repository.findById(cozinhaId)
-			.orElseThrow(() -> new EntidadeNaoEncontradaException(
-				String.format(MSG_COZINHA_NAO_ENCONTRADA, cozinhaId)));
+			.orElseThrow(() -> new CozinhaNaoEncontradaException(cozinhaId));
 	}
 
 }

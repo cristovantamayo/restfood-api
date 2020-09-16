@@ -11,19 +11,16 @@ import org.springframework.stereotype.Service;
 
 import com.cristovantamayo.restfoodapi.domains.cozinha.model.Cozinha;
 import com.cristovantamayo.restfoodapi.domains.cozinha.service.CrudCozinhaService;
+import com.cristovantamayo.restfoodapi.domains.restaurante.exception.RestauranteNaoEncontradoException;
 import com.cristovantamayo.restfoodapi.domains.restaurante.model.Restaurante;
 import com.cristovantamayo.restfoodapi.domains.restaurante.repository.RestauranteRepository;
 import com.cristovantamayo.restfoodapi.exception.EntidadeEmUsoException;
-import com.cristovantamayo.restfoodapi.exception.EntidadeNaoEncontradaException;
 
 @Service
 class CrudRestauranteServiceImpl implements CrudRestauranteService {
 	
 	private static final String MSG_RESTAURANTE_EM_USO = 
 		"o Restaurante de código %d não pode ser removido, pois está em uso.";
-
-	private static final String MSG_RESTAURANTE_NAO_ENCONTRADO = 
-		"O ID %d informado para Restaurante não existe.";
 
 	@Autowired
 	RestauranteRepository repository;
@@ -65,8 +62,7 @@ class CrudRestauranteServiceImpl implements CrudRestauranteService {
 			repository.deleteById(restauranteId);
 			
 		} catch(EmptyResultDataAccessException e) {
-			throw new EntidadeNaoEncontradaException(
-				String.format(MSG_RESTAURANTE_NAO_ENCONTRADO, restauranteId));
+			throw new RestauranteNaoEncontradoException(restauranteId);
 			
 		} catch(DataIntegrityViolationException e) {
 			throw new EntidadeEmUsoException(
@@ -82,8 +78,7 @@ class CrudRestauranteServiceImpl implements CrudRestauranteService {
 	@Override
 	public Restaurante getOrFail(Long restauranteId) {
 		return repository.findById(restauranteId)
-			.orElseThrow(() -> new EntidadeNaoEncontradaException(
-				String.format(MSG_RESTAURANTE_NAO_ENCONTRADO, restauranteId)));
+			.orElseThrow(() -> new RestauranteNaoEncontradoException(restauranteId));
 	}
 
 }
