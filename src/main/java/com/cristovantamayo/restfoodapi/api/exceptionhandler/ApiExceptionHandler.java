@@ -1,5 +1,6 @@
 package com.cristovantamayo.restfoodapi.api.exceptionhandler;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -15,7 +16,10 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import com.cristovantamayo.restfoodapi.exception.EntidadeEmUsoException;
 import com.cristovantamayo.restfoodapi.exception.EntidadeNaoEncontradaException;
 import com.cristovantamayo.restfoodapi.exception.NegocioException;
+import com.fasterxml.jackson.databind.JsonMappingException.Reference;
+import com.fasterxml.jackson.databind.exc.IgnoredPropertyException;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 
 @ControllerAdvice
 public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
@@ -27,7 +31,13 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 		Throwable rootCause = ExceptionUtils.getRootCause(ex);
 		
 		if(rootCause instanceof InvalidFormatException)
-			return handleInvalidFormatExceptiion((InvalidFormatException) rootCause, headers, status, request);
+			return handleInvalidFormatException((InvalidFormatException) rootCause, headers, status, request);
+		
+		if(rootCause instanceof IgnoredPropertyException)
+			return handleIgnoredPropertyException((IgnoredPropertyException) rootCause, headers, status, request);
+		
+		if(rootCause instanceof UnrecognizedPropertyException)
+			return handleUnrecognizedPropertyException((UnrecognizedPropertyException) rootCause, headers, status, request);
 		
 		
 		ProblemType problemType = ProblemType.REQUISICAO_INCOMPREENSSIVEL;
@@ -39,13 +49,11 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 		
 		return handleExceptionInternal(ex, problem, new HttpHeaders(), status, request);
 	}
-	
-	private ResponseEntity<Object> handleInvalidFormatExceptiion(InvalidFormatException ex,
+
+	private ResponseEntity<Object> handleInvalidFormatException(InvalidFormatException ex,
 			HttpHeaders headers, HttpStatus status, WebRequest request) {
 		
-		String path = ex.getPath().stream()
-				.map(ref -> ref.getFieldName())
-				.collect(Collectors.joining("."));
+		String path = joinPath(ex.getPath());
 		
 		ProblemType problemType = ProblemType.REQUISICAO_INCOMPREENSSIVEL;
 		String detail = String.format("A propriedade '%s' recebeu o valor '%s', "
@@ -59,6 +67,46 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 				.build();
 		
 		return handleExceptionInternal(ex, problem, headers, status, request);
+	}
+	
+	private ResponseEntity<Object> handleIgnoredPropertyException(IgnoredPropertyException ex,
+			HttpHeaders headers, HttpStatus status, WebRequest request) {
+		
+		String path = joinPath(ex.getPath());
+		
+		ProblemType problemType = ProblemType.REQUISICAO_INCOMPREENSSIVEL;
+		String detail = String.format("Não é permitido atribuir a propriedade '%s' através deste recurso. Tente com as propriedades '%s'.",
+				path,
+				ex.getKnownPropertyIds());
+		
+		Problem problem =  
+				createProblemBuilder(status, problemType, detail)
+				.build();
+		
+		return handleExceptionInternal(ex, problem, headers, status, request);
+	}
+	
+	private ResponseEntity<Object> handleUnrecognizedPropertyException(UnrecognizedPropertyException ex,
+			HttpHeaders headers, HttpStatus status, WebRequest request) {
+		
+		String path = joinPath(ex.getPath());
+		
+		ProblemType problemType = ProblemType.REQUISICAO_INCOMPREENSSIVEL;
+		String detail = String.format("A propriedade '%s' não é válida para este recurso. Tente as propriedades '%s'.",
+				path,
+				ex.getKnownPropertyIds());
+		
+		Problem problem =  
+				createProblemBuilder(status, problemType, detail)
+				.build();
+		
+		return handleExceptionInternal(ex, problem, headers, status, request);
+	}
+	
+	private String joinPath(List<Reference> references) {
+	    return references.stream()
+	        .map(ref -> ref.getFieldName())
+	        .collect(Collectors.joining("."));
 	}
 
 	@ExceptionHandler(EntidadeNaoEncontradaException.class)
