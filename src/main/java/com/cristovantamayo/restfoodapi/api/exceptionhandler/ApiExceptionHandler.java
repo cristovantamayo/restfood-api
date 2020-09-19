@@ -1,5 +1,6 @@
 package com.cristovantamayo.restfoodapi.api.exceptionhandler;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,6 +30,10 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 	
 	
 	
+	private static final String MSG_ERRO_USUARIO_FINAL = 
+			"Ocorreu um erro interno inesperado. Tente novamente. "
+			+ "Persistindo o erro contate o suporte.";
+
 	@Override
 	protected ResponseEntity<Object> handleNoHandlerFoundException(NoHandlerFoundException ex, HttpHeaders headers,
 			HttpStatus status, WebRequest request) {
@@ -39,6 +44,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 		
 		Problem problem =  
 				createProblemBuilder(status, problemType, detail)
+				.userMessage(detail)
 				.build();
 		
 		return handleExceptionInternal(ex, problem, headers, status, request);
@@ -66,6 +72,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 		
 		Problem problem =  
 				createProblemBuilder(status, problemType, detail)
+				.userMessage(MSG_ERRO_USUARIO_FINAL)
 				.build();
 		
 		return handleExceptionInternal(ex, problem, headers, status, request);
@@ -93,6 +100,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 		
 		Problem problem = 
 				createProblemBuilder(status, problemType, detail)
+				.userMessage(MSG_ERRO_USUARIO_FINAL)
 				.build();
 		
 		return handleExceptionInternal(ex, problem, new HttpHeaders(), status, request);
@@ -112,6 +120,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 		
 		Problem problem =  
 				createProblemBuilder(status, problemType, detail)
+				.userMessage(MSG_ERRO_USUARIO_FINAL)
 				.build();
 		
 		return handleExceptionInternal(ex, problem, headers, status, request);
@@ -129,6 +138,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 		
 		Problem problem =  
 				createProblemBuilder(status, problemType, detail)
+				.userMessage(MSG_ERRO_USUARIO_FINAL)
 				.build();
 		
 		return handleExceptionInternal(ex, problem, headers, status, request);
@@ -146,6 +156,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 		
 		Problem problem =  
 				createProblemBuilder(status, problemType, detail)
+				.userMessage(MSG_ERRO_USUARIO_FINAL)
 				.build();
 		
 		return handleExceptionInternal(ex, problem, headers, status, request);
@@ -166,6 +177,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 		
 		Problem problem = 
 				createProblemBuilder(status, problemType, detail)
+				.userMessage(detail)
 				.build();
 		
 		return handleExceptionInternal(ex, problem, new HttpHeaders(), HttpStatus.NOT_FOUND, request);
@@ -180,6 +192,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 		
 		Problem problem = 
 				createProblemBuilder(status, problemType, detail)
+				.userMessage(detail)
 				.build();
 		
 		return handleExceptionInternal(ex, problem, new HttpHeaders(), HttpStatus.CONFLICT, request);
@@ -194,6 +207,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 		
 		Problem problem = 
 				createProblemBuilder(status, problemType, detail)
+				.userMessage(detail)
 				.build();
 		
 		
@@ -205,13 +219,13 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 		
 		HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
 		ProblemType problemType = ProblemType.ERRO_DE_SISTEMA;
-		String detail = "Ocorreu um erro interno inesperado. Tente novamente. "
-				+ "Persistindo o erro contate o suporte.";
+		String detail = MSG_ERRO_USUARIO_FINAL;
 		
 		ex.printStackTrace();	
 		
 		Problem problem = 
 				createProblemBuilder(status, problemType, detail)
+				.userMessage(detail)
 				.build();
 		
 		
@@ -226,11 +240,15 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 			body = Problem.builder()
 					.title(status.getReasonPhrase())
 					.status(status.value())
+					.userMessage(MSG_ERRO_USUARIO_FINAL)
+					.timestamp(LocalDateTime.now())
 					.build();
 		} else if (body instanceof String) {
 			body = Problem.builder()
 					.title((String) body)
 					.status(status.value())
+					.userMessage(MSG_ERRO_USUARIO_FINAL)
+					.timestamp(LocalDateTime.now())
 					.build();
 		}
 		
@@ -242,6 +260,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 				.status(status.value())
 				.type(problemType.getUri())
 				.title(problemType.getTitle())
+				.timestamp(LocalDateTime.now())
 				.detail(detail);
 	}
 

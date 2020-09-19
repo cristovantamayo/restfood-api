@@ -1,5 +1,7 @@
 package com.cristovantamayo.restfoodapi.api.exceptionhandler;
 
+import java.time.LocalDateTime;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
@@ -15,5 +17,8 @@ public class Problem {
 	private final String type;
 	private final String title;
 	private final String detail;
+	
+	private final String userMessage; 
+	private final LocalDateTime timestamp;
 
 }
