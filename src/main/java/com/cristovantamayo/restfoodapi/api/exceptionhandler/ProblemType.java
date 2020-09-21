@@ -10,7 +10,8 @@ public enum ProblemType {
 	SOLICITACAO_IMPROPRIA("/solicitacao-impropria", "Solicitação Imprópria"),
 	REQUISICAO_INCOMPREENSSIVEL("/requisicao-incompreenssivel", "Requisição incompreenssível"),
 	PARAMETRO_INVALIDO("/parametro-invalido", "Parâmetro Inválido"),
-	ERRO_DE_SISTEMA("/erro-de-sistema", "Erro de Sistema");
+	ERRO_DE_SISTEMA("/erro-de-sistema", "Erro de Sistema"),
+	DADOS_INVALIDOS("/dados-invalidos", "Dados Inválidos");
 	
 	private String title;
 	private String uri;

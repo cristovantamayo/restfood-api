@@ -1,6 +1,7 @@
 package com.cristovantamayo.restfoodapi.api.exceptionhandler;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -10,6 +11,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
@@ -33,6 +36,32 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 	private static final String MSG_ERRO_USUARIO_FINAL = 
 			"Ocorreu um erro interno inesperado. Tente novamente. "
 			+ "Persistindo o erro contate o suporte.";
+	
+	@Override
+	protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
+			HttpHeaders headers, HttpStatus status, WebRequest request) {
+		
+		ProblemType problemType = ProblemType.DADOS_INVALIDOS;
+		String detail = "Um ou mais campos estão inválidos. Faça o preenchimento correto e tente novamente.";
+		
+		BindingResult bindingResult = ex.getBindingResult();
+		
+		List<Problem.Field> problemFields = new ArrayList<>();
+		bindingResult.getFieldErrors().forEach(erro -> problemFields.add(
+				Problem.Field.builder()
+					.nome(erro.getField()) 
+					.userMessage(erro.getDefaultMessage())
+					.build()
+				));
+		
+		Problem problem =
+				createProblemBuilder(status, problemType, detail)
+				.userMessage(detail)
+				.fields(problemFields)
+				.build();
+		
+		return handleExceptionInternal(ex, problem, headers, status, request);
+	}
 
 	@Override
 	protected ResponseEntity<Object> handleNoHandlerFoundException(NoHandlerFoundException ex, HttpHeaders headers,
@@ -258,9 +287,9 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 	private Problem.ProblemBuilder createProblemBuilder(HttpStatus status, ProblemType problemType, String detail){
 		return Problem.builder()
 				.status(status.value())
+				.timestamp(LocalDateTime.now())
 				.type(problemType.getUri())
 				.title(problemType.getTitle())
-				.timestamp(LocalDateTime.now())
 				.detail(detail);
 	}
 
