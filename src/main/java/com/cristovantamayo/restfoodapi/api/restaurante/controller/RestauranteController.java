@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.util.ReflectionUtils;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cristovantamayo.restfoodapi.Groups;
 import com.cristovantamayo.restfoodapi.domains.cozinha.exception.CozinhaNaoEncontradaException;
 import com.cristovantamayo.restfoodapi.domains.restaurante.model.Restaurante;
 import com.cristovantamayo.restfoodapi.domains.restaurante.service.CrudRestauranteService;
@@ -51,7 +53,10 @@ public class RestauranteController {
 	
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
-	public Restaurante salvar(@RequestBody @Valid Restaurante restaurante) {
+	public Restaurante salvar(
+			@RequestBody
+			@Validated(Groups.CadastroRestaurante.class)
+			Restaurante restaurante) {
 		try {
 			return service.salvar(restaurante);
 		} catch (CozinhaNaoEncontradaException e) {
