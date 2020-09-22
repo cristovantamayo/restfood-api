@@ -7,6 +7,9 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.TypeMismatchException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,11 +34,12 @@ import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 @ControllerAdvice
 public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 	
-	
-	
 	private static final String MSG_ERRO_USUARIO_FINAL = 
 			"Ocorreu um erro interno inesperado. Tente novamente. "
 			+ "Persistindo o erro contate o suporte.";
+	
+	@Autowired
+	private MessageSource messageSource;
 	
 	@Override
 	protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
@@ -47,12 +51,17 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 		BindingResult bindingResult = ex.getBindingResult();
 		
 		List<Problem.Field> problemFields = new ArrayList<>();
-		bindingResult.getFieldErrors().forEach(erro -> problemFields.add(
+		bindingResult.getFieldErrors().forEach(fieldErro -> {
+			
+			String message = messageSource.getMessage(fieldErro, LocaleContextHolder.getLocale());
+			
+			problemFields.add(
 				Problem.Field.builder()
-					.nome(erro.getField()) 
-					.userMessage(erro.getDefaultMessage())
+					.nome(fieldErro.getField()) 
+					.userMessage(message)
 					.build()
-				));
+			);
+		});
 		
 		Problem problem =
 				createProblemBuilder(status, problemType, detail)
