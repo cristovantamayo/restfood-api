@@ -2,6 +2,8 @@ package com.cristovantamayo.restfoodapi.api.estado.controller;
 
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -37,12 +39,20 @@ public class EstadoController {
 	
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
-	public Estado salvar(@RequestBody Estado estado) {
+	public Estado salvar(
+			@RequestBody
+			@Valid
+			Estado estado) {
 		return service.salvar(estado);
 	}
 	
 	@PutMapping("/{estadoId}")
-	public Estado atualizar(@PathVariable Long estadoId, @RequestBody Estado estado){
+	public Estado atualizar(
+			@PathVariable 
+			Long estadoId, 
+			@RequestBody 
+			@Valid
+			Estado estado){
 		Estado estadoAtual = service.getOrFail(estadoId);
 		BeanUtils.copyProperties(estado, estadoAtual, "id");
 		return service.salvar(estadoAtual);

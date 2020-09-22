@@ -2,6 +2,8 @@ package com.cristovantamayo.restfoodapi.api.cidade.controller;
 
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -43,7 +45,10 @@ public class CidadeController {
 	
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
-	public Cidade salvar(@RequestBody Cidade cidade){
+	public Cidade salvar(
+			@RequestBody 
+			@Valid
+			Cidade cidade){
 		try {
 			return service.salvar(cidade);
 		} catch (EstadoNaoEncontradoException e) {
@@ -52,8 +57,12 @@ public class CidadeController {
 	}
 	
 	@PutMapping("/{cidadeId}")
-	public Cidade atualizar(@PathVariable Long cidadeId,
-		@RequestBody Cidade cidade){
+	public Cidade atualizar(
+			@PathVariable 
+			Long cidadeId,
+			@RequestBody
+			@Valid
+			Cidade cidade){
 		
 		try {
 			Cidade cidadeAtual = service.getOrFail(cidadeId);
