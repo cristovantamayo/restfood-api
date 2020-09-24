@@ -12,7 +12,7 @@ import javax.persistence.OneToMany;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
-import com.cristovantamayo.restfoodapi.Groups;
+import com.cristovantamayo.restfoodapi.core.validation.Groups;
 import com.cristovantamayo.restfoodapi.domains.restaurante.model.Restaurante;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonRootName;

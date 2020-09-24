@@ -1,4 +1,4 @@
-package com.cristovantamayo.restfoodapi;
+package com.cristovantamayo.restfoodapi.core.validation;
 
 public interface Groups {
 	

@@ -27,7 +27,7 @@ import javax.validation.groups.Default;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import com.cristovantamayo.restfoodapi.Groups;
+import com.cristovantamayo.restfoodapi.core.validation.Groups;
 import com.cristovantamayo.restfoodapi.domains.cozinha.model.Cozinha;
 import com.cristovantamayo.restfoodapi.domains.formapagamento.model.FormaPagamento;
 import com.cristovantamayo.restfoodapi.domains.produto.model.Produto;
@@ -52,7 +52,7 @@ public class Restaurante {
 	@Column(nullable = false)
 	private String nome;
 	
-	@PositiveOrZero(message = "{TaxaFrete.invalida}")
+	@PositiveOrZero
 	@Column(name = "taxa_frete", nullable = false)
 	private BigDecimal taxaFrete;
 	

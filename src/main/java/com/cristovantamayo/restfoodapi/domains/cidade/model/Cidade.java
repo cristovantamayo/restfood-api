@@ -13,7 +13,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.groups.ConvertGroup;
 import javax.validation.groups.Default;
 
-import com.cristovantamayo.restfoodapi.Groups;
+import com.cristovantamayo.restfoodapi.core.validation.Groups;
 import com.cristovantamayo.restfoodapi.domains.estado.model.Estado;
 
 import lombok.EqualsAndHashCode;
